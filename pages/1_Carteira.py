@@ -5,9 +5,15 @@ from utils.functions import color_negative_red
 
 
 def main():
-    st.title('Carteira')
-    st.divider()
 
+    st.set_page_config(
+        page_title="Carteira",
+        page_icon="📊",
+        layout="wide",
+    )
+
+    st.title('Carteira')
+    
     try:
         conn = sqlite3.connect('database.db')
         carteira = pd.read_sql('SELECT * FROM produtos', conn)

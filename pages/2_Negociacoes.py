@@ -4,7 +4,7 @@ import sqlite3
 
 def main():
     st.title('Negociações')
-    st.divider()
+    
     
     try:
       conn = sqlite3.connect('database.db')

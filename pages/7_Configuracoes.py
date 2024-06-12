@@ -4,10 +4,17 @@ import pandas as pd
 import time
 
 def main():
-    st.title('Configurações')
-    st.divider()
 
-    tproprietarios, tclasses = st.tabs(['Proprietários', 'Classes'])
+    st.set_page_config(
+      page_title="Subscricao",
+      page_icon="📊",
+      #layout="wide",
+    )
+    
+    st.title('Configurações')
+    
+
+    tproprietarios, tclasses , tdiversos= st.tabs(['Proprietários', 'Classes', 'Diversos'])
 
     try:
         conn = sqlite3.connect('database.db')
@@ -70,6 +77,18 @@ def main():
                     st.rerun()
 
         
+    with tdiversos:
+        st.write('Configurações diversas')
+        if st.button('Limpar Banco de Dados'):
+            conn = sqlite3.connect('database.db')
+            cur = conn.cursor()
+            cur.execute('DROP TABLE IF EXISTS PRODUTOS')
+            cur.execute('DROP TABLE IF EXISTS PROVENTOS')
+            conn.commit()
+            conn.close()
+
+
+
 
 @st.experimental_dialog("Cadastro de Proprietários")
 def cadastro_proprietario():

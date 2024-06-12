@@ -3,8 +3,17 @@ import sqlite3
 import pandas as pd
 
 def main():
+    st.set_page_config(
+      page_title="Subscricao",
+      page_icon="📊",
+      #layout="wide",
+    )
+
+
     st.title('Subscricoes')
-    st.divider()
+
+
+    
 
     conn = sqlite3.connect('database.db')
     produtos = pd.read_sql('SELECT * FROM produtos', conn)

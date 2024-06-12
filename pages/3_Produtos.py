@@ -2,9 +2,17 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 import yfinance as yf
+import time
 
 
 def main():
+    
+    st.set_page_config(
+      page_title="Produtos",
+      page_icon="📊",
+      layout="wide",
+    )
+
     try:
       conn = sqlite3.connect('database.db')
       classes = pd.read_sql('SELECT * FROM classes', conn)
@@ -20,7 +28,7 @@ def main():
       produtos = pd.DataFrame()
 
     st.title('Produtos')
-    st.divider()
+    
 
     if produtos.empty:
         st.warning('Importe os produtos primeiro!')
@@ -32,12 +40,12 @@ def main():
                 progress_bar.progress(100)
                 st.write(cotacoes)
                 st.toast(cotacoes, icon='😁')
-                # time.sleep(3)
-                # progress_bar.empty()
-                # st.rerun()
+                time.sleep(3)
+                progress_bar.empty()
+                st.rerun()
 
     # produtos = produtos.drop(columns=['Data Cotacao', 'Data Atualizacao'])
-    # produtos = produtos[['Produto', 'Nome', 'Classe', 'Cotacao Atual']]
+    produtos = produtos[['Produto', 'Nome', 'Classe', 'Cotacao Atual']]
     produtos_table = st.data_editor(produtos, 
             column_config={
               "Classe": st.column_config.SelectboxColumn(
@@ -96,7 +104,7 @@ def get_cotacoes():
 
   # Atualizar 'Cotacao Atual' e 'Data Cotacao' no DataFrame 'produtos'
   produtos['Cotacao Atual'] = merged['Cotacao'].combine_first(merged['Cotacao Atual']).astype(float)
-  produtos['Data Cotacao'] = merged['Data Cotacao_novo'].combine_first(merged['Data Cotacao'])
+  produtos['Data Cotacao'] = merged['Data Cotacao'].combine_first(merged['Data Cotacao'])
   produtos['Data Atualizacao'] = pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')
 
   names = get_names()

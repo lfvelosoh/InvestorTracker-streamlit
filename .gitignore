@@ -363,4 +363,5 @@ $RECYCLE.BIN/
 *.xlsx
 *.csv
 
+.flake8
 # End of https://www.toptal.com/developers/gitignore/api/microsoftoffice,windows,linux,macos,python,django

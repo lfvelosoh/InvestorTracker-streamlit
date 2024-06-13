@@ -57,8 +57,8 @@ def processar_produtos():
 
 
 def processar_negociacoes(files, proprietario):
-    
-    try:        
+
+    try:
         conn = sqlite3.connect('database.db')  # conecta ao banco de dados
         negociacoes = pd.read_sql('SELECT * FROM negociacoes', conn)  # lê a tabela 'negociacoes' do banco de dados
         conn.close()  # fecha a conexão com o banco de dados
@@ -68,7 +68,7 @@ def processar_negociacoes(files, proprietario):
     df_negociacoes = pd.DataFrame()  # cria um DataFrame vazio
 
     for file in files:
-        
+
         aba = 'Negociações'
         xls = pd.ExcelFile(file)
 
@@ -87,21 +87,21 @@ def processar_negociacoes(files, proprietario):
         negociacoes = negociacoes['Data'].unique()  # pega os anos e meses únicos da tabela 'negociacoes'
         negociacoes = pd.to_datetime(negociacoes).strftime('%Y-%m-%d')  # converte os anos e meses para datetime
         df_negociacoes = df_negociacoes[~df_negociacoes['Data'].isin(negociacoes)]  # filtra as negociações que não estão na tabela 'negociacoes'
-        
-    if not df_negociacoes.empty:    
+
+    if not df_negociacoes.empty:
         df_negociacoes = df_negociacoes.drop(columns=['Periodo (Final)'])  # remove a coluna 'Periodo (Final)'
         df_negociacoes.dropna(inplace=True)  # remove linhas com valores nulos
         df_negociacoes['Operacao'] = np.where(df_negociacoes['Quantidade (Compra)'] > 0, 'Compra', 'Venda')  # cria a coluna 'Operacao'
         df_negociacoes['Quantidade'] = df_negociacoes['Quantidade (Compra)'].add(df_negociacoes['Quantidade (Venda)'])  # calcula a quantidade
         df_negociacoes['Preco'] = df_negociacoes['Preco Medio (Compra)'].add(df_negociacoes['Preco Medio (Venda)'])  # calcula o preço medio
-        df_negociacoes.drop(columns=['Quantidade (Compra)','Quantidade (Venda)', 'Quantidade (Liquida)', 'Preco Medio (Compra)', 'Preco Medio (Venda)', 'Instituicao'], inplace=True)  # remove as colunas desnecessárias
+        df_negociacoes.drop(columns=['Quantidade (Compra)', 'Quantidade (Venda)', 'Quantidade (Liquida)', 'Preco Medio (Compra)', 'Preco Medio (Venda)', 'Instituicao'], inplace=True)  # remove as colunas desnecessárias
         df_negociacoes['Produto'] = df_negociacoes['Produto'].str.rstrip('F')  # remove o 'F' do final do código do produto
         df_negociacoes['Proprietario'] = proprietario  # adiciona o proprietário aos proventos
         df_negociacoes['OBS'] = '-'  # cria a coluna 'OBS'
         df_negociacoes['Data'] = pd.to_datetime(df_negociacoes['Data'])  # converte a coluna 'Data' para datetime
         df_negociacoes['Ano-Mes'] = df_negociacoes['Data'].dt.strftime('%Y-%m')  # cria a coluna 'Ano-Mes' com o ano e mês do pagamento
 
-        mudancas = {'NUBR33' : 'ROXO34', 'FBOK34': 'M1TA34'}  # dicionário com as mudanças de códigos de produtos
+        mudancas = {'NUBR33': 'ROXO34', 'FBOK34': 'M1TA34'}  # dicionário com as mudanças de códigos de produtos
         df_negociacoes['Produto'] = df_negociacoes['Produto'].replace(mudancas)  # substitui os códigos de produtos
 
         conn = sqlite3.connect('database.db')  # conecta ao banco de dados
@@ -115,7 +115,6 @@ def processar_proventos(files, proprietario):
     try:
         conn = sqlite3.connect('database.db')  # conecta ao banco de dados
         proventos = pd.read_sql('SELECT * FROM proventos', conn)  # lê a tabela 'proventos' do banco de dados
-        produtos = pd.read_sql('SELECT * FROM produtos', conn)  # lê a tabela 'produtos' do banco de dados
         conn.close()  # fecha a conexão com o banco de dados
     except:
         proventos = pd.DataFrame()
@@ -137,7 +136,7 @@ def processar_proventos(files, proprietario):
         proventos = proventos['Pagamento'].unique()
         proventos = pd.to_datetime(proventos).strftime('%Y-%m-%d')
         df_proventos = df_proventos[~df_proventos['Pagamento'].isin(proventos)]
-    
+
     if not df_proventos.empty:
         df_proventos.dropna(inplace=True)  # remove linhas com valores nulos
         df_proventos['Produto'] = df_proventos['Produto'].str.split(' -').str[0]  # separa o código do produto
@@ -167,19 +166,17 @@ def processar_proventos(files, proprietario):
 def main():
 
     st.set_page_config(
-      page_title="Subscricao",
-      page_icon="📊",
-      #layout="wide",
+        page_title="Subscricao",
+        page_icon="📊",
+        # layout="wide",
     )
 
-
     st.title('Upload de arquivos')
-    
 
     try:
         conn = sqlite3.connect('database.db')
         proprietarios = pd.read_sql('SELECT * FROM proprietarios', conn)
-        conn.close()    
+        conn.close()
     except:
         proprietarios = pd.DataFrame()
 
@@ -197,8 +194,7 @@ def main():
                     st.warning(prod)
                     prov = processar_proventos(uploaded_files, proprietario)
                     st.warning(prov)
-                
-                
 
-if  __name__ == '__main__':
-  main()
+
+if __name__ == '__main__':
+    main()

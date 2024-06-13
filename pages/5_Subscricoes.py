@@ -2,18 +2,15 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 
+
 def main():
     st.set_page_config(
-      page_title="Subscricao",
-      page_icon="📊",
-      #layout="wide",
+        page_title="Subscricao",
+        page_icon="📊",
+        # layout="wide",
     )
 
-
     st.title('Subscricoes')
-
-
-    
 
     conn = sqlite3.connect('database.db')
     produtos = pd.read_sql('SELECT * FROM produtos', conn)
@@ -29,12 +26,11 @@ def main():
 
     if button:
         conn = sqlite3.connect('database.db')
-        conn.execute(f"INSERT INTO negociacoes (Data, Produto, Operacao, Quantidade, Preco, OBS) VALUES ('{datafield}', '{produto}','Compra' ,{quantidade}, {preco}, 'Subscricao')")
+        conn.execute(f"INSERT INTO negociacoes (Data, Produto, Operacao, Quantidade, Preco, OBS, Proprietario) VALUES ('{datafield}', '{produto}','Compra' ,{quantidade}, {preco}, 'Subscricao', '{proprietario}')")
         conn.commit()
         conn.close()
         st.toast('Subscricao adicionada com sucesso')
-        
-    
 
-if  __name__ == '__main__':
-  main()
+
+if __name__ == '__main__':
+    main()

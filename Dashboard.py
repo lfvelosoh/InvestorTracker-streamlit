@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 from utils.functions import color_negative_red
 
+
 def main():
 
     st.set_page_config(
@@ -14,7 +15,7 @@ def main():
 
     st.title('Dashboard')
 
-    try:  
+    try:
         conn = sqlite3.connect('database.db')
         proventos = pd.read_sql('SELECT * FROM proventos', conn)
         produtos = pd.read_sql('SELECT * FROM produtos', conn)
@@ -23,7 +24,7 @@ def main():
 
         carteira = negociacoes
         carteira['Valor'] = carteira['Quantidade'] * carteira['Preco']
-        carteira = carteira.groupby('Produto').agg({'Quantidade': 'sum','Valor': 'sum'}).reset_index()
+        carteira = carteira.groupby('Produto').agg({'Quantidade': 'sum', 'Valor': 'sum'}).reset_index()
         carteira = carteira.merge(produtos, on='Produto', how='left')
         carteira['Valor Atual'] = carteira['Quantidade'] * carteira['Cotacao Atual']
         carteira['Lucro'] = carteira['Valor Atual'] - carteira['Valor']
@@ -42,7 +43,7 @@ def main():
         rentabilidade = (total_atual / total_investido - 1) * 100
 
         c1m, c2m, c3m, c4m = st.columns(4)
-        
+
         c1m.metric('Total Investido', f'R$ {total_investido:.2f}')
         c2m.metric('Total Atual', f'R$ {total_atual:.2f}', f'R$ {(total_atual - total_investido):.2f}')
         c3m.metric('Rentabilidade', f'{rentabilidade:.2f}%')
@@ -53,12 +54,12 @@ def main():
         cc1, cc2 = st.columns(2)
 
         styled_classe = classe.style.format({
-                'Lucro': 'R$ {:,.2f}',
-                'Rentabilidade': '{:.2f}%',
-                'Valor': 'R$ {:,.2f}',
-                'Valor Atual': 'R$ {:,.2f}',
-                'Peso': '{:.2f}%'
-            }).map(color_negative_red, subset=['Rentabilidade', 'Lucro'])
+                                            'Lucro': 'R$ {:,.2f}',
+                                            'Rentabilidade': '{:.2f}%',
+                                            'Valor': 'R$ {:,.2f}',
+                                            'Valor Atual': 'R$ {:,.2f}',
+                                            'Peso': '{:.2f}%'
+                                            }).map(color_negative_red, subset=['Rentabilidade', 'Lucro'])
 
         cc1.dataframe(styled_classe)
 
@@ -77,7 +78,7 @@ def main():
         else:
             proventos['Pagamento'] = pd.to_datetime(proventos['Pagamento'])
             proventos['Pagamento'] = proventos['Pagamento'].dt.strftime('%Y-%m')
-            proventos = proventos.groupby('Pagamento').agg({'Valor liquido': 'sum'}).reset_index()      
+            proventos = proventos.groupby('Pagamento').agg({'Valor liquido': 'sum'}).reset_index()
             fig = px.bar(proventos, x='Pagamento', y='Valor liquido', title='Proventos por Ano-Mes', text='Valor liquido')
             fig.update_traces(texttemplate='%{text:.2s}', textposition='inside')
             st.plotly_chart(fig)
@@ -96,7 +97,7 @@ def main():
 
         with col2:
             st.subheader('Top 5 Prejuizo')
-            top_5_prejuizo = carteira.nsmallest(5, 'Rentabilidade')	
+            top_5_prejuizo = carteira.nsmallest(5, 'Rentabilidade')
             top_5_prejuizo = top_5_prejuizo[['Produto', 'Rentabilidade', 'Lucro']]
             styled_top_5_prejuizo = top_5_prejuizo.style.format({
                 'Lucro': 'R${:,.2f}',
@@ -105,6 +106,7 @@ def main():
             st.dataframe(styled_top_5_prejuizo)
     except:
         st.warning('Faça os produtos e atualize as cotações para visualizar o dashboard!')
-    
-if  __name__ == '__main__':
-  main()
+
+
+if __name__ == '__main__':
+    main()
